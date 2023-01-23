@@ -36,21 +36,23 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
 
     button->Bind(wxEVT_BUTTON, [this, textView](wxCommandEvent &event)
                  {
-                     auto result = wxMessageBox("Hello World", "Message", wxYES_NO | wxCANCEL | wxICON_INFORMATION);
+                     wxMessageDialog dialog(this, "Hello World", "Message", wxYES_NO | wxCANCEL | wxICON_INFORMATION);
+
+                    auto result = dialog.ShowModal();
 
                      switch (result)
                      {
-                     case wxYES:
+                     case wxID_YES:
                          textView->SetLabel("You clicked Yes");
                          break;
-                     case wxNO:
+                     case wxID_NO:
                          textView->SetLabel("You clicked No");
                          break;
-                     case wxCANCEL:
+                     case wxID_CANCEL:
                          textView->SetLabel("You clicked Cancel");
                          break;
                      default:
+                         textView->SetLabel("You clicked something else");
                          break;
-                     }
-                 });
+                     } });
 }
