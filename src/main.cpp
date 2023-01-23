@@ -10,6 +10,9 @@ class MyFrame : public wxFrame
 {
 public:
     MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
+
+private:
+    wxString userName;
 };
 
 bool MyApp::OnInit()
@@ -37,13 +40,17 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
     button->Bind(wxEVT_BUTTON, [this, textView](wxCommandEvent &event)
                  {
                      wxTextEntryDialog dialog(this, "Enter your name", "Name", "John Doe");
+
+                     dialog.SetTextValidator(wxTextValidator(wxFILTER_NONE, &userName));
+
+                     userName = "Some other name";
+
                      if (dialog.ShowModal() == wxID_OK)
                      {
-                         textView->SetLabel(dialog.GetValue());
+                         textView->SetLabel(userName);
                      }
                      else
                      {
                          textView->SetLabel("You cancelled the dialog");
-                     }
-                 });
+                     } });
 }
