@@ -36,7 +36,14 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
 
     button->Bind(wxEVT_BUTTON, [this, textView](wxCommandEvent &event)
                  {
-                     auto result = wxGetTextFromUser("Enter your name", "Name", "John Doe");
-                     textView->SetLabel(result);
+                     wxTextEntryDialog dialog(this, "Enter your name", "Name", "John Doe");
+                     if (dialog.ShowModal() == wxID_OK)
+                     {
+                         textView->SetLabel(dialog.GetValue());
+                     }
+                     else
+                     {
+                         textView->SetLabel("You cancelled the dialog");
+                     }
                  });
 }
