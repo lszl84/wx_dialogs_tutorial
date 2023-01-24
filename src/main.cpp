@@ -2,6 +2,8 @@
 #include <wx/colordlg.h>
 #include <wx/fontdlg.h>
 
+#include "brightnessdialog.h"
+
 class MyApp : public wxApp
 {
 public:
@@ -22,6 +24,7 @@ private:
     void OnOpenImage(wxCommandEvent &event);
     void OnChangeColor(wxCommandEvent &event);
     void OnChangeFont(wxCommandEvent &event);
+    void OnChangeBrightness(wxCommandEvent &event);
 
     void UpdateBitmapImage(const wxImage &image);
 };
@@ -49,15 +52,18 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
     auto imageButton = new wxButton(this, wxID_ANY, "Load Image...");
     auto colorButton = new wxButton(this, wxID_ANY, "Change Color...");
     auto fontButton = new wxButton(this, wxID_ANY, "Change Font...");
+    auto brightnessButton = new wxButton(this, wxID_ANY, "Change Brightness...");
 
     imageButton->Bind(wxEVT_BUTTON, &MyFrame::OnOpenImage, this);
     colorButton->Bind(wxEVT_BUTTON, &MyFrame::OnChangeColor, this);
     fontButton->Bind(wxEVT_BUTTON, &MyFrame::OnChangeFont, this);
+    brightnessButton->Bind(wxEVT_BUTTON, &MyFrame::OnChangeBrightness, this);
 
     auto buttonSizer = new wxBoxSizer(wxHORIZONTAL);
     buttonSizer->Add(imageButton, 0, wxLEFT, FromDIP(5));
     buttonSizer->Add(colorButton, 0, wxLEFT, FromDIP(5));
     buttonSizer->Add(fontButton, 0, wxLEFT, FromDIP(5));
+    buttonSizer->Add(brightnessButton, 0, wxLEFT, FromDIP(5));
 
     sizer->Add(textView, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT | wxTOP, FromDIP(10));
     sizer->Add(staticBitmap, 1, wxEXPAND | wxALL, FromDIP(10));
@@ -110,6 +116,26 @@ void MyFrame::OnChangeFont(wxCommandEvent &event)
         textView->SetFont(font);
         this->Fit();
         this->Layout();
+    }
+}
+
+void MyFrame::OnChangeBrightness(wxCommandEvent &event)
+{
+    if (!image.IsOk())
+    {
+        wxMessageBox("Please load an image first", "Error", wxOK | wxICON_ERROR);
+    }
+    else
+    {
+        BrightnessDialog dialog(this);
+
+        if (dialog.ShowModal() == wxID_OK)
+        {
+            double adj = dialog.GetBrightnessAdjustment();
+            image.ChangeBrightness(adj);
+
+            UpdateBitmapImage(image);
+        }
     }
 }
 
