@@ -3,6 +3,7 @@
 #include <wx/fontdlg.h>
 
 #include "brightnessdialog.h"
+#include "brightnesschangeevent.h"
 
 class MyApp : public wxApp
 {
@@ -129,13 +130,30 @@ void MyFrame::OnChangeBrightness(wxCommandEvent &event)
     {
         BrightnessDialog dialog(this);
 
+        dialog.Bind(wxEVT_BRIGHTNESS_CHANGED, [&](BrightnessChangeEvent &event)
+                    {
+                        double adj = event.GetBrightnessAdjustment();
+
+                        auto previewImage = image.Copy();
+                        previewImage.ChangeBrightness(adj);
+                        UpdateBitmapImage(previewImage);
+
+                        previewImage.Destroy(); });
+
+        dialog.Bind(EVT_PREVIEW_CHECKBOX_CHANGED, [&](wxCommandEvent &event)
+                    {
+                        if (event.GetInt() == 0)
+                        {
+                            UpdateBitmapImage(image);
+                        } });
+
         if (dialog.ShowModal() == wxID_OK)
         {
             double adj = dialog.GetBrightnessAdjustment();
             image.ChangeBrightness(adj);
-
-            UpdateBitmapImage(image);
         }
+
+        UpdateBitmapImage(image);
     }
 }
 
