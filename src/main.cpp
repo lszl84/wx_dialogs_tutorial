@@ -12,7 +12,10 @@ public:
     MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
 
 private:
-    wxString userName;
+    wxStaticBitmap *staticBitmap;
+    wxStaticText *textView;
+
+    wxImage image;
 };
 
 bool MyApp::OnInit()
@@ -27,30 +30,19 @@ wxIMPLEMENT_APP(MyApp);
 MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
     : wxFrame(NULL, wxID_ANY, title, pos, size)
 {
-    auto button = new wxButton(this, wxID_ANY, "Show Dialog");
-    auto textView = new wxStaticText(this, wxID_ANY, "Click the button to show the dialog");
-
     auto sizer = new wxBoxSizer(wxVERTICAL);
 
-    sizer->Add(button, 0, wxALL, FromDIP(10));
-    sizer->Add(textView, 0, wxALL, FromDIP(10));
+    textView = new wxStaticText(this, wxID_ANY, "Here's your image:");
+    staticBitmap = new wxStaticBitmap(this, wxID_ANY, wxBitmap(wxSize(1, 1)), wxDefaultPosition, FromDIP(wxSize(500, 200)));
 
-    this->SetSizer(sizer);
+    auto imageButton = new wxButton(this, wxID_ANY, "Load Image...");
 
-    button->Bind(wxEVT_BUTTON, [this, textView](wxCommandEvent &event)
-                 {
-                     wxTextEntryDialog dialog(this, "Enter your name", "Name", "John Doe");
+    auto buttonSizer = new wxBoxSizer(wxHORIZONTAL);
+    buttonSizer->Add(imageButton, 0, wxLEFT, FromDIP(5));
 
-                     dialog.SetTextValidator(wxTextValidator(wxFILTER_NONE, &userName));
+    sizer->Add(textView, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT | wxTOP, FromDIP(10));
+    sizer->Add(staticBitmap, 1, wxEXPAND | wxALL, FromDIP(10));
+    sizer->Add(buttonSizer, 0, wxALIGN_RIGHT | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(10));
 
-                     userName = "Some other name";
-
-                     if (dialog.ShowModal() == wxID_OK)
-                     {
-                         textView->SetLabel(userName);
-                     }
-                     else
-                     {
-                         textView->SetLabel("You cancelled the dialog");
-                     } });
+    this->SetSizerAndFit(sizer);
 }
