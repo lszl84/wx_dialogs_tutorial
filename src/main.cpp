@@ -1,4 +1,5 @@
 #include <wx/wx.h>
+#include <wx/colordlg.h>
 
 class MyApp : public wxApp
 {
@@ -18,6 +19,7 @@ private:
     wxImage image;
 
     void OnOpenImage(wxCommandEvent &event);
+    void OnChangeColor(wxCommandEvent &event);
 
     void UpdateBitmapImage(const wxImage &image);
 };
@@ -43,11 +45,14 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
     staticBitmap->SetScaleMode(wxStaticBitmap::Scale_None);
 
     auto imageButton = new wxButton(this, wxID_ANY, "Load Image...");
+    auto colorButton = new wxButton(this, wxID_ANY, "Change Color...");
 
     imageButton->Bind(wxEVT_BUTTON, &MyFrame::OnOpenImage, this);
+    colorButton->Bind(wxEVT_BUTTON, &MyFrame::OnChangeColor, this);
 
     auto buttonSizer = new wxBoxSizer(wxHORIZONTAL);
     buttonSizer->Add(imageButton, 0, wxLEFT, FromDIP(5));
+    buttonSizer->Add(colorButton, 0, wxLEFT, FromDIP(5));
 
     sizer->Add(textView, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT | wxTOP, FromDIP(10));
     sizer->Add(staticBitmap, 1, wxEXPAND | wxALL, FromDIP(10));
@@ -72,6 +77,20 @@ void MyFrame::OnOpenImage(wxCommandEvent &event)
     }
 
     UpdateBitmapImage(image);
+}
+
+void MyFrame::OnChangeColor(wxCommandEvent &event)
+{
+    wxColourData data;
+    data.SetColour(this->GetBackgroundColour());
+    wxColourDialog dialog(this, &data);
+
+    if (dialog.ShowModal() == wxID_OK)
+    {
+        auto backgroundColor = dialog.GetColourData().GetColour();
+        this->SetBackgroundColour(backgroundColor);
+        this->Refresh();
+    }
 }
 
 void MyFrame::UpdateBitmapImage(const wxImage &image)
