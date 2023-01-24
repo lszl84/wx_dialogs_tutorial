@@ -1,4 +1,5 @@
 #include <wx/wx.h>
+#include <wx/progdlg.h>
 
 class MyApp : public wxApp
 {
@@ -34,7 +35,17 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
 
     this->SetSizer(sizer);
 
-    button->Bind(wxEVT_BUTTON, [this, textView](wxCommandEvent &event) {
+    button->Bind(wxEVT_BUTTON, [this, textView](wxCommandEvent &event)
+                 {
+                     wxProgressDialog dialog("Progress Dialog", "Doing work", 100, this, wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-        });
+                     const int cnt = 100000;
+                     for (int i = 0; i < cnt; i++)
+                     {
+                         if (!dialog.Update(i * 100 / cnt))
+                         {
+                             textView->SetLabel("Cancelled");
+                             break;
+                         }
+                     } });
 }
