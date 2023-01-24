@@ -5,6 +5,8 @@
 #include "brightnessdialog.h"
 #include "brightnesschangeevent.h"
 
+#include "bufferedbitmap.h"
+
 class MyApp : public wxApp
 {
 public:
@@ -17,7 +19,7 @@ public:
     MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
 
 private:
-    wxStaticBitmap *staticBitmap;
+    BufferedBitmap *staticBitmap;
     wxStaticText *textView;
 
     wxImage image;
@@ -47,8 +49,7 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
     auto sizer = new wxBoxSizer(wxVERTICAL);
 
     textView = new wxStaticText(this, wxID_ANY, "Here's your image:");
-    staticBitmap = new wxStaticBitmap(this, wxID_ANY, wxBitmap(wxSize(1, 1)), wxDefaultPosition, FromDIP(wxSize(500, 200)));
-    staticBitmap->SetScaleMode(wxStaticBitmap::Scale_None);
+    staticBitmap = new BufferedBitmap(this, wxID_ANY, wxBitmap(wxSize(1, 1)), wxDefaultPosition, FromDIP(wxSize(500, 200)));
 
     auto imageButton = new wxButton(this, wxID_ANY, "Load Image...");
     auto colorButton = new wxButton(this, wxID_ANY, "Change Color...");
@@ -101,6 +102,7 @@ void MyFrame::OnChangeColor(wxCommandEvent &event)
     {
         auto backgroundColor = dialog.GetColourData().GetColour();
         this->SetBackgroundColour(backgroundColor);
+        staticBitmap->SetBackgroundColour(backgroundColor);
         this->Refresh();
     }
 }
