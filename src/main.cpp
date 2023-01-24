@@ -1,5 +1,6 @@
 #include <wx/wx.h>
 #include <wx/colordlg.h>
+#include <wx/fontdlg.h>
 
 class MyApp : public wxApp
 {
@@ -20,6 +21,7 @@ private:
 
     void OnOpenImage(wxCommandEvent &event);
     void OnChangeColor(wxCommandEvent &event);
+    void OnChangeFont(wxCommandEvent &event);
 
     void UpdateBitmapImage(const wxImage &image);
 };
@@ -46,13 +48,16 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
 
     auto imageButton = new wxButton(this, wxID_ANY, "Load Image...");
     auto colorButton = new wxButton(this, wxID_ANY, "Change Color...");
+    auto fontButton = new wxButton(this, wxID_ANY, "Change Font...");
 
     imageButton->Bind(wxEVT_BUTTON, &MyFrame::OnOpenImage, this);
     colorButton->Bind(wxEVT_BUTTON, &MyFrame::OnChangeColor, this);
+    fontButton->Bind(wxEVT_BUTTON, &MyFrame::OnChangeFont, this);
 
     auto buttonSizer = new wxBoxSizer(wxHORIZONTAL);
     buttonSizer->Add(imageButton, 0, wxLEFT, FromDIP(5));
     buttonSizer->Add(colorButton, 0, wxLEFT, FromDIP(5));
+    buttonSizer->Add(fontButton, 0, wxLEFT, FromDIP(5));
 
     sizer->Add(textView, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT | wxTOP, FromDIP(10));
     sizer->Add(staticBitmap, 1, wxEXPAND | wxALL, FromDIP(10));
@@ -90,6 +95,21 @@ void MyFrame::OnChangeColor(wxCommandEvent &event)
         auto backgroundColor = dialog.GetColourData().GetColour();
         this->SetBackgroundColour(backgroundColor);
         this->Refresh();
+    }
+}
+
+void MyFrame::OnChangeFont(wxCommandEvent &event)
+{
+    wxFontData data;
+    data.SetInitialFont(textView->GetFont());
+    wxFontDialog dialog(this, data);
+
+    if (dialog.ShowModal() == wxID_OK)
+    {
+        auto font = dialog.GetFontData().GetChosenFont();
+        textView->SetFont(font);
+        this->Fit();
+        this->Layout();
     }
 }
 
